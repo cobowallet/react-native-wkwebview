@@ -45,6 +45,7 @@
   BOOL _injectJavaScriptForMainFrameOnly;
   BOOL _injectedJavaScriptForMainFrameOnly;
   NSString *_injectJavaScript;
+  NSString *_injectJavaScriptFile;
   NSString *_injectedJavaScript;
 }
 
@@ -96,6 +97,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                               injectionTime:WKUserScriptInjectionTimeAtDocumentStart
                                            forMainFrameOnly:_injectJavaScriptForMainFrameOnly];
   [self resetupScripts];
+}
+
+- (void)setInjectJavaScriptFile:(NSString *)file {
+  _injectJavaScriptFile = file;
+  if (_injectJavaScriptFile != nil) {
+    NSArray<NSString *> *components = [_injectJavaScriptFile componentsSeparatedByString:@"."];
+    if (components.count > 1) {
+      NSString *file = [_injectJavaScriptFile substringToIndex:(_injectJavaScriptFile.length - components[components.count - 1].length - 1)];
+      NSString *path = [[NSBundle mainBundle] pathForResource:file ofType:components[components.count - 1]];
+      NSString *content = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+      [self setInjectJavaScript:content];
+    } else {
+      NSString *path = [[NSBundle mainBundle] pathForResource:_injectJavaScriptFile ofType:nil];
+      NSString *content = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+      [self setInjectJavaScript:content];
+    }
+  }
 }
 
 - (void)setInjectedJavaScript:(NSString *)script {

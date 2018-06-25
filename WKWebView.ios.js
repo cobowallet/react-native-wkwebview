@@ -213,6 +213,7 @@ class WKWebView extends React.Component {
      * Function that accepts a string that will be passed to the WebView and executed immediately as JavaScript.
      */
     injectJavaScript: PropTypes.string,
+    injectJavaScriptFile: PropTypes.string,
     /**
      * Sets the JS to be injected when the webpage loads.
      */
@@ -334,6 +335,7 @@ class WKWebView extends React.Component {
         injectJavaScriptForMainFrameOnly={this.props.injectJavaScriptForMainFrameOnly}
         injectedJavaScriptForMainFrameOnly={this.props.injectedJavaScriptForMainFrameOnly}
         injectJavaScript={this.props.injectJavaScript}
+        injectJavaScriptFile={this.props.injectJavaScriptFile}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
