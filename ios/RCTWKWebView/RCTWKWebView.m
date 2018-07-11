@@ -36,6 +36,7 @@
 @property (assign) BOOL sendCookies;
 @property (nonatomic, strong) WKUserScript *atStartScript;
 @property (nonatomic, strong) WKUserScript *atEndScript;
+@property (nonatomic, strong) WKUserScript *atStartFileScript;
 
 @end
 
@@ -107,13 +108,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       NSString *file = [_injectJavaScriptFile substringToIndex:(_injectJavaScriptFile.length - components[components.count - 1].length - 1)];
       NSString *path = [[NSBundle mainBundle] pathForResource:file ofType:components[components.count - 1]];
       NSString *content = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-      [self setInjectJavaScript:content];
+      
+      self.atStartFileScript = [[WKUserScript alloc] initWithSource:content
+                                                      injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                                                   forMainFrameOnly:_injectJavaScriptForMainFrameOnly];
     } else {
       NSString *path = [[NSBundle mainBundle] pathForResource:_injectJavaScriptFile ofType:nil];
       NSString *content = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-      [self setInjectJavaScript:content];
+      
+      self.atStartFileScript = [[WKUserScript alloc] initWithSource:content
+                                                      injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                                                   forMainFrameOnly:_injectJavaScriptForMainFrameOnly];
     }
+  } else {
+    self.atStartFileScript = nil;
   }
+  [self resetupScripts];
 }
 
 - (void)setInjectedJavaScript:(NSString *)script {
@@ -148,6 +158,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self setupPostMessageScript];
   if (self.atStartScript) {
     [_webView.configuration.userContentController addUserScript:self.atStartScript];
+  }
+  if (self.atStartFileScript) {
+    [_webView.configuration.userContentController addUserScript:self.atStartFileScript];
   }
   if (self.atEndScript) {
     [_webView.configuration.userContentController addUserScript:self.atEndScript];
