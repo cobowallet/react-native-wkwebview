@@ -43,6 +43,10 @@ WKWebView aims to be a drop-in replacement for UIWebView. However, some legacy U
 
 A callback to get the loading progress of WKWebView. Derived from [`estimatedProgress`](https://developer.apple.com/library/ios/documentation/WebKit/Reference/WKWebView_Ref/#//apple_ref/occ/instp/WKWebView/estimatedProgress) property.
 
+- **onNavigationResponse**
+
+A callback to get response headers, http status code and http localized status code.
+
 ```js
 <WKWebView onProgress={(progress) => console.log(progress)} />
 ```
@@ -64,6 +68,12 @@ It allows you to provide a fallback URL for iOS 8 users.
 
 ```js
 <WKWebView source={{ file: RNFS.MainBundlePath + '/data/index.html', allowingReadAccessToURL: RNFS.MainBundlePath }} />
+```
+
+You can also use the `require` syntax (sendCookies and userAgent will be ignored)
+
+```js
+<WKWebView source={require('./index.html')} />
 ```
 
 - **userAgent="MyUserAgent" (or customUserAgent="...")**

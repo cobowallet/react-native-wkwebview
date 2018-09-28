@@ -188,6 +188,10 @@ class WKWebView extends React.Component {
      */
     onScroll: PropTypes.func,
     /**
+     * A callback to get response headers, http status code and http localized status code.
+     */
+    onNavigationResponse: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
@@ -309,18 +313,18 @@ class WKWebView extends React.Component {
       WKWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
-    let source = {};
-    if (this.props.source && typeof this.props.source == 'object') {
+    let source = this.props.source;
+    if (this.props.source && typeof this.props.source === 'object') {
       source = Object.assign({}, this.props.source, {
         sendCookies: this.props.sendCookies,
         customUserAgent: this.props.customUserAgent || this.props.userAgent
       });
-    }
 
-    if (this.props.html) {
-      source.html = this.props.html;
-    } else if (this.props.url) {
-      source.uri = this.props.url;
+      if (this.props.html) {
+        source.html = this.props.html;
+      } else if (this.props.url) {
+        source.uri = this.props.url;
+      }
     }
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
@@ -356,6 +360,7 @@ class WKWebView extends React.Component {
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         pagingEnabled={this.props.pagingEnabled}
         directionalLockEnabled={this.props.directionalLockEnabled}
+        onNavigationResponse={this._onNavigationResponse}
       />;
 
     return (
@@ -507,6 +512,11 @@ class WKWebView extends React.Component {
     const onScroll = this.props.onScroll;
     onScroll && onScroll(event.nativeEvent);
   };
+
+  _onNavigationResponse = (event: Event) => {
+    const { onNavigationResponse } = this.props;
+    onNavigationResponse && onNavigationResponse(event)
+  }
 }
 
 const RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebView, {
